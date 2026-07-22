@@ -1,0 +1,12 @@
+{
+	"name": "ssd-mock-app",
+    "version": "1.0.0",
+    "description": "Mock application for SSD practical test",
+    "main": "server.js",
+    "scripts": {
+    	"start": "node server.js"
+    },
+    "dependencies": {
+   		"express": "^4.18.2"
+    }
+}

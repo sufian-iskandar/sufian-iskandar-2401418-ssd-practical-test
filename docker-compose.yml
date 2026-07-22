@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  webapp:
+    build: ./src
+    ports:
+      - "8080:8080"
+    restart: always
+
+  sonarqube:
+    image: sonarqube:lts
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+    restart: always
+
+volumes:
+  sonarqube_data:
