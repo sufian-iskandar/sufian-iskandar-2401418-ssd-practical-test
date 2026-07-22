@@ -1,6 +1,7 @@
 {
 	"name": "ssd-mock-app",
     "version": "1.0.0",
+    "type": "module",
     "description": "Mock application for SSD practical test",
     "main": "server.js",
     "scripts": {
