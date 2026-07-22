@@ -1,0 +1,64 @@
+name: SSD Practical CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  security_audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. Checkout the Code (Full history for potential SonarQube integration)
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # 2. Setup Node.js Environment
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    # 3. Install Dependencies (Targeting the src folder)
+    - name: Install NPM Packages
+      run: |
+        cd src
+        npm install
+
+    # 4. Run Unit Tests (With continue-on-error to prevent crashes if minimal)
+    - name: Run Tests
+      run: |
+        cd src
+        npm test
+      continue-on-error: true
+
+    # 5. OWASP Dependency Check (Lab 6 SCA)
+    - name: Run OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'SSD-Practical'
+        path: 'src'
+        format: 'HTML'
+    
+    # 6. Upload Vulnerability Report Artifact
+    - name: Upload Dependency Check Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Dependency-Check-Report
+        path: src/reports/dependency-check-report.html
+    
+    # 7. SonarQube SAST Scan
+    - name: Official SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v3
+      env:
+    # Remember to add these in Github Repo -> Security -> Secrets and Variables
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      with:
+        args: >
+          -Dsonar.projectKey=ssd
+          -Dsonar.sources=./src
